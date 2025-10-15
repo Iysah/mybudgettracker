@@ -134,7 +134,7 @@ export default function Expense() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 16 },
+  content: { padding: 8 },
   label: { marginTop: 12, marginBottom: 6 },
   typesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 } as any,
   typeButton: {

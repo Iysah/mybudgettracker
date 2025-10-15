@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
+    padding: 8,
   },
   title: {
     marginBottom: 12,

@@ -3,7 +3,11 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useBottomSheet } from '@/components/ui/bottom-sheet';
+import { useCategories } from '@/hooks/useCategories';
+const formatCurrency = (v: number) => `₦${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
 import { globalStyles } from '@/styles/global-styles';
+import { lightColors } from '@/theme/colors';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
@@ -38,7 +42,7 @@ export default function HomeScreen() {
   }, [spending, budget]);
 
   const formatCurrency = (v: number) =>
-    v.toLocaleString(undefined, { style: 'currency', currency: 'NGN', minimumFractionDigits: 2 });
+    `₦${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   
   return (
     <SafeAreaProvider style={{ backgroundColor: 'transparent', position: 'relative', paddingTop: Constants.statusBarHeight }}>
@@ -49,16 +53,16 @@ export default function HomeScreen() {
 
         <ThemedView style={styles.cardContainer}>
           <ThemedText type="defaultSemiBold" style={{ textAlign: 'center'}}>Balance</ThemedText>
-          <ThemedText type="title" style={{ textAlign: 'center'}}>$12,345.67</ThemedText>
+          <ThemedText type="title" style={{ textAlign: 'center'}}>₦12,345.67</ThemedText>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
             <View>
               <ThemedText type="default">Spending</ThemedText>
-              <ThemedText type="default">$1,234.56</ThemedText>
+              <ThemedText type="default">₦1,234.56</ThemedText>
             </View>
             <View>
               <ThemedText type="default">Budget</ThemedText>
-              <ThemedText type="default">$10,734.56</ThemedText>
+              <ThemedText type="default">₦10,734.56</ThemedText>
             </View>
           </View>
 
@@ -101,9 +105,67 @@ export default function HomeScreen() {
         <ThemedText type="subtitle" style={{ marginTop: 24, marginBottom: 8 }}>
           Recent Transactions
         </ThemedText>
+
+        <RecentTransactions />
       </ScrollView>
     </SafeAreaProvider>
   );
+}
+
+function RecentTransactions() {
+  const { categories } = useCategories()
+
+  // Mock spending totals per category (in a real app these would be calculated from transactions)
+  const sampleTotals = (categories || []).slice(0, 3).map((c, i) => ({
+    id: c.id,
+    name: c.name,
+    total: Math.round((i + 1) * 120 + Math.random() * 200),
+    subitems: c.subcategories.slice(0, 3).map((s, j) => ({
+      name: s,
+      amount: Math.round((j + 1) * 40 + Math.random() * 80),
+    })),
+  }))
+
+  const grandTotals = sampleTotals.reduce((s, x) => s + x.total, 0) || 1
+
+  return (
+    <View>
+      {sampleTotals.map((cat) => (
+        <ThemedView key={cat.id} style={{ marginBottom: 12, backgroundColor: '#f9f9f9', padding: 12, borderRadius: 12 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <View style={{ width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: lightColors.muted }}>
+                <ThemedText>{cat.name[0]}</ThemedText>
+              </View>
+              <ThemedText type="defaultSemiBold">{cat.name}</ThemedText>
+            </View>
+            <ThemedText type="default">{formatCurrency(cat.total)}</ThemedText>
+          </View>
+
+          <View style={{ padding: 12, borderRadius: 12, marginBottom: 6 }}>
+            {cat.subitems.map((s) => {
+              const pct = Math.min(1, s.amount / cat.total)
+              return (
+                <View key={s.name} style={{ marginBottom: 8 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <ThemedText>{s.name}</ThemedText>
+                    <ThemedText>{formatCurrency(s.amount)}</ThemedText>
+                  </View>
+                  <View style={{ height: 6, backgroundColor: '#eee', borderRadius: 6, overflow: 'hidden', marginTop: 6 }}>
+                    <View style={{ width: `${pct * 100}%`, height: '100%', backgroundColor: '#10B981' }} />
+                  </View>
+                </View>
+              )
+            })}
+          </View>
+        </ThemedView>
+      ))}
+
+      <TouchableOpacity style={{ alignSelf: 'center', marginTop: 6 }} onPress={() => { /* navigate to transactions list */ }}>
+        <ThemedText type="link">View All</ThemedText>
+      </TouchableOpacity>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -117,7 +179,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     padding: 16,
     borderRadius: 16,
-    backgroundColor: '#eee',
+    backgroundColor: '#3b83f61f',
     gap: 8,
     marginBottom: 8,
   },
@@ -144,21 +206,21 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#1252A5',
+    backgroundColor: '#3B82F6',
   },
   actionButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
-    gap: 12,
+    gap: 10,
   },
   ctaButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 10,
+    borderRadius: 24,
   },
   incomeButton: {
     backgroundColor: '#1E8E3E',
