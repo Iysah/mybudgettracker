@@ -15,6 +15,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useToast } from '@/components/ui/toast';
+import { useCategories } from '@/hooks/useCategories';
 import { lightColors } from '@/theme/colors';
 
 type IncomeType = 'Salary' | 'Freelance' | 'Gifts' | 'Other'
@@ -34,6 +35,9 @@ export default function Income() {
     });
 
     const { toast } = useToast();
+    const { categories } = useCategories();
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+    const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
 
   function onSelectType(t: IncomeType) {
     setType(t)
@@ -129,8 +133,53 @@ export default function Income() {
           keyboardType={Platform.OS === 'ios' ? 'decimal-pad' : 'numeric'}
           style={styles.input}
         />
+        <View style={styles.rowBetween}>
+            <ThemedText style={styles.label}>Date</ThemedText>
+            <TouchableOpacity 
+                style={styles.dateButton}
+                onPress={() => setDatePickerVisible(true)}
+            >
+                <ThemedText>{formattedDate}</ThemedText>
+            </TouchableOpacity>
+        </View>
 
-        <ThemedText style={styles.label}>Date</ThemedText>
+        <ThemedText style={styles.label}>Category</ThemedText>
+        {categories ? (
+          <ScrollView horizontal style={styles.typesRow}>
+            {categories.map((c) => (
+              <TouchableOpacity
+                key={c.id}
+                style={[styles.typeButton, selectedCategory === c.id ? styles.typeButtonActive : undefined]}
+                onPress={() => {
+                  setSelectedCategory(c.id)
+                  setSelectedSubcategory(null)
+                }}
+              >
+                <ThemedText type={selectedCategory === c.id ? 'defaultSemiBold' : 'default'}>{c.name}</ThemedText>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        ) : (
+          <ThemedText>Loading categories...</ThemedText>
+        )}
+
+        {selectedCategory ? (
+          <>
+            <ThemedText style={styles.label}>Subcategory</ThemedText>
+            <ScrollView horizontal style={styles.typesRow}>
+              {(categories?.find((c) => c.id === selectedCategory)?.subcategories || []).map((s) => (
+                <TouchableOpacity
+                  key={s}
+                  style={[styles.typeButton, selectedSubcategory === s ? styles.typeButtonActive : undefined]}
+                  onPress={() => setSelectedSubcategory(s)}
+                >
+                  <ThemedText type={selectedSubcategory === s ? 'defaultSemiBold' : 'default'}>{s}</ThemedText>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </>
+        ) : null}
+
         <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="datetime"
@@ -218,6 +267,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 12,
+  },
+  dateButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
   },
   buttonRow: {
     marginTop: 20,
