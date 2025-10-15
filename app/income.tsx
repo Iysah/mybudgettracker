@@ -102,7 +102,7 @@ export default function Income() {
         </ThemedText>
 
         <ThemedText style={styles.label}>Type</ThemedText>
-        <ScrollView horizontal style={styles.typesRow}>
+        <ScrollView horizontal style={styles.typesRow} showsHorizontalScrollIndicator={false}>
           {(['Salary', 'Freelance', 'Gifts', 'Other'] as IncomeType[]).map((t) => (
             <TouchableOpacity
               key={t}

@@ -1,6 +1,9 @@
 import { ThemedText } from '@/components/themed-text'
+import { ThemedView } from '@/components/themed-view'
 import { useCategories } from '@/hooks/useCategories'
 import Constants from 'expo-constants'
+import { router } from 'expo-router'
+import { ArrowLeft } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -13,7 +16,13 @@ const AddCategories = () => {
   return (
     <SafeAreaProvider style={{ backgroundColor: 'transparent', position: 'relative', paddingTop: Constants.statusBarHeight }}>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <ThemedText type="title">Settings</ThemedText>
+        <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <TouchableOpacity onPress={() => {router.back()}}>
+            <ArrowLeft />
+          </TouchableOpacity>
+          <ThemedText type="title">Manage Categories</ThemedText>
+        </ThemedView>
+        
         <ThemedText type="default" style={{ marginTop: 10 }}>
           Manage categories and subcategories used throughout the app.
         </ThemedText>
