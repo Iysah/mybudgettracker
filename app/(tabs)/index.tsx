@@ -1,16 +1,16 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomSheet, useBottomSheet } from '@/components/ui/bottom-sheet';
+import { useBottomSheet } from '@/components/ui/bottom-sheet';
 import { globalStyles } from '@/styles/global-styles';
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const [showIncomeSheet, setShowIncomeSheet] = useState(false);
-  const [showExpenseSheet, setShowExpenseSheet] = useState(false);
 
   const { isVisible, open, close } = useBottomSheet();
 
@@ -24,7 +24,7 @@ export default function HomeScreen() {
     const remainingRatio = Math.max(0, 1 - spentRatio);
     const remainingAmt = bud - spent;
 
-    let color = '#1252A5'; // blue
+    let color = '#3B82F6'; // blue
     if (remainingRatio < 0.2) color = '#F44336'; // red
     else if (remainingRatio < 0.5) color = '#FFB300'; // yellow
 
@@ -67,18 +67,6 @@ export default function HomeScreen() {
             <View style={styles.progressTrack}>
               <View style={[styles.progressFill, { width: `${percentSpent * 100}%` }]} />
             </View>
-
-            <View style={styles.progressMeta}>
-              <ThemedText type="default">Used</ThemedText>
-              <ThemedText type="default">{spentLabel}</ThemedText>
-            </View>
-
-            <View style={styles.remainingRow}>
-              <ThemedText type="default">Amount remaining</ThemedText>
-              <ThemedText type="default" style={{ color: remainingColor }}>
-                {formatCurrency(remainingAmount)}
-              </ThemedText>
-            </View>
           </View>
         </ThemedView>
 
@@ -86,7 +74,7 @@ export default function HomeScreen() {
         <View style={styles.actionButtonsContainer}>
           <TouchableOpacity
             style={[styles.ctaButton, styles.incomeButton]}
-            onPress={() => setShowIncomeSheet(true)}
+            onPress={() => router.push('/income')}
             activeOpacity={0.85}
             accessibilityLabel="Add Income"
           >
@@ -98,7 +86,7 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={[styles.ctaButton, styles.expenseButton]}
-            onPress={open}
+            onPress={() => {router.push('/expense')}}
             activeOpacity={0.85}
             accessibilityLabel="Add Expense"
           >
@@ -109,21 +97,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <ThemedView style={styles.cardContainer}>
-          <ThemedText type="defaultSemiBold">Expenses</ThemedText>
-          <ThemedText type="title">$3,456.78</ThemedText>
-          <ThemedText type="default">- $456.78 this month</ThemedText>
-        </ThemedView>
-
+        {/* Recent Transactions */}
+        <ThemedText type="subtitle" style={{ marginTop: 24, marginBottom: 8 }}>
+          Recent Transactions
+        </ThemedText>
       </ScrollView>
-      <BottomSheet
-        isVisible={isVisible}
-        onClose={close}
-        title='Settings'
-        snapPoints={[0.3, 0.6, 0.9]}
-      >
-        <Text>Your content here</Text>
-      </BottomSheet>
     </SafeAreaProvider>
   );
 }
