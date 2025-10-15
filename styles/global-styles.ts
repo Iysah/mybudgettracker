@@ -70,6 +70,7 @@ type Style = {
 export const globalStyles = StyleSheet.create<Style>({
     container: {
         flex: 1,
+        padding: 16,
     },
 
     screenPadding: {

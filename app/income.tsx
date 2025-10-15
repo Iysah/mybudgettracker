@@ -16,6 +16,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useToast } from '@/components/ui/toast';
 import { useCategories } from '@/hooks/useCategories';
+import { globalStyles } from '@/styles/global-styles';
 import { lightColors } from '@/theme/colors';
 
 type IncomeType = 'Salary' | 'Freelance' | 'Gifts' | 'Other'
@@ -39,10 +40,10 @@ export default function Income() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
 
-  function onSelectType(t: IncomeType) {
+    function onSelectType(t: IncomeType) {
     setType(t)
     if (t !== 'Other') setOtherLabel('')
-  }
+    }
 
     const handleConfirmDate = (date: Date): void => {
         // Store the actual Date object
@@ -68,33 +69,33 @@ export default function Income() {
         setDatePickerVisible(false);
     };
 
-  function onSubmit() {
-    const numericAmount = parseFloat(amount.replace(/,/g, ''))
-    if (!numericAmount || numericAmount <= 0) {
-      Alert.alert('Invalid amount', 'Please enter an amount greater than 0')
-      return
-    }
+    function onSubmit() {
+        const numericAmount = parseFloat(amount.replace(/,/g, ''))
+        if (!numericAmount || numericAmount <= 0) {
+        Alert.alert('Invalid amount', 'Please enter an amount greater than 0')
+        return
+        }
 
-    const payload = {
-      type: type === 'Other' ? otherLabel || 'Other' : type,
-      amount: numericAmount,
-      date,
-      recurring: type === 'Salary' ? recurring : false,
-      notes,
-    }
+        const payload = {
+        type: type === 'Other' ? otherLabel || 'Other' : type,
+        amount: numericAmount,
+        date,
+        recurring: type === 'Salary' ? recurring : false,
+        notes,
+        }
 
-    // For now just log / alert the payload. Integration with storage/api can be added later.
-    // eslint-disable-next-line no-console
-    console.log('Income saved', payload)
-    toast({
-      title: 'Success!',
-      description: 'Income entry saved.',
-      variant: 'success',
-    });
-  }
+        // For now just log / alert the payload. Integration with storage/api can be added later.
+        // eslint-disable-next-line no-console
+        console.log('Income saved', payload)
+        toast({
+        title: 'Success!',
+        description: 'Income entry saved.',
+        variant: 'success',
+        });
+    }
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={globalStyles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedText type="title" style={styles.title}>
           Add Income
@@ -142,43 +143,6 @@ export default function Income() {
                 <ThemedText>{formattedDate}</ThemedText>
             </TouchableOpacity>
         </View>
-
-        <ThemedText style={styles.label}>Category</ThemedText>
-        {categories ? (
-          <ScrollView horizontal style={styles.typesRow}>
-            {categories.map((c) => (
-              <TouchableOpacity
-                key={c.id}
-                style={[styles.typeButton, selectedCategory === c.id ? styles.typeButtonActive : undefined]}
-                onPress={() => {
-                  setSelectedCategory(c.id)
-                  setSelectedSubcategory(null)
-                }}
-              >
-                <ThemedText type={selectedCategory === c.id ? 'defaultSemiBold' : 'default'}>{c.name}</ThemedText>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        ) : (
-          <ThemedText>Loading categories...</ThemedText>
-        )}
-
-        {selectedCategory ? (
-          <>
-            <ThemedText style={styles.label}>Subcategory</ThemedText>
-            <ScrollView horizontal style={styles.typesRow}>
-              {(categories?.find((c) => c.id === selectedCategory)?.subcategories || []).map((s) => (
-                <TouchableOpacity
-                  key={s}
-                  style={[styles.typeButton, selectedSubcategory === s ? styles.typeButtonActive : undefined]}
-                  onPress={() => setSelectedSubcategory(s)}
-                >
-                  <ThemedText type={selectedSubcategory === s ? 'defaultSemiBold' : 'default'}>{s}</ThemedText>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </>
-        ) : null}
 
         <DateTimePickerModal
             isVisible={isDatePickerVisible}
@@ -244,7 +208,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 18,
     borderWidth: 1,
-    backgroundColor: lightColors.secondaryForeground,
+    backgroundColor: lightColors.secondary,
     marginRight: 8,
     marginBottom: 8,
   },
